@@ -9,7 +9,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 /**
  * Functions
  */
+window.addEventListener('resize',()=>{
+  //size reset
+  sizes.width = window.innerWidth
+  sizes.height = window.innerHeight
 
+  //camera aspect update
+  pCamera.aspect = sizes.width/sizes.height
+
+  //camera update
+  pCamera.updateProjectionMatrix()
+
+  renderer.setSize(sizes.width, sizes.height)
+})
 
 
 
