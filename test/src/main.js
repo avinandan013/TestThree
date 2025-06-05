@@ -3,6 +3,17 @@
  */
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import * as dat from 'lil-gui'
+
+
+/**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader()
+const texture = textureLoader.load('/static/textures/door/color.jpg')
+
+
+
 
 
 
@@ -36,6 +47,9 @@ const sizes = {
   height : window.innerHeight
 }
 
+//GUI declaration
+const gui = new dat.GUI()
+
 
 
 
@@ -55,9 +69,17 @@ const scene = new THREE.Scene()
  */
 const cube1 = new THREE.Mesh(
   new THREE.BoxGeometry(1,1,1,4,4,4),
-  new THREE.MeshBasicMaterial({color:"red", side: THREE.DoubleSide, wireframe: true})
+  new THREE.MeshBasicMaterial({
+    map: texture, 
+    side: THREE.DoubleSide, 
+    wireframe: false
+  })
 )
-scene.add(cube1)
+// scene.add(cube1)
+
+
+
+
 
 
 
@@ -94,7 +116,7 @@ const canvas = document.querySelector('.webgl')
  */
 const renderer = new THREE.WebGLRenderer({
   canvas : canvas,
-  antiAlias : true
+  antialias : true
 })
 renderer.setSize(window.innerWidth,window.innerHeight)
 renderer.render(scene,pCamera)
@@ -106,7 +128,7 @@ renderer.render(scene,pCamera)
 
 
 /**
- * Helper set up
+ * Helper set up (axes helper, camera helper)
  */
 const axesHelper = new THREE.AxesHelper()
 scene.add(axesHelper)
@@ -114,6 +136,8 @@ scene.add(axesHelper)
 
 const pCameraHelper = new THREE.CameraHelper(pCamera)
 scene.add(pCameraHelper)
+
+
 
 
 
@@ -133,6 +157,43 @@ orbitController.dampingFactor = 0.01
 
 
 /**
+ * GUI debug functions
+ */
+gui
+  .add(cube1.position, 'x')
+  .min(-3)
+  .max(3)
+  .step(0.1)
+  .name('cube X')
+gui
+  .add(cube1.position, 'y')
+  .min(-3)
+  .max(3)
+  .step(0.1)
+  .name('cube Y')
+gui
+  .add(cube1.position, 'z')
+  .min(-3)
+  .max(3)
+  .step(0.1)
+  .name('cube Z')
+gui
+  .add(cube1.material, 'wireframe')
+gui
+  .addColor(cube1.material, 'color')
+gui
+  .add(cube1,'visible')
+  
+
+
+
+
+
+
+
+
+
+/**
  * Animation
  */
 
@@ -143,3 +204,5 @@ const animate = () => {
   window.requestAnimationFrame(animate)
 }
 animate()
+
+
