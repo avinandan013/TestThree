@@ -5,12 +5,58 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
 
+/**
+ * Loading manager
+ */
+const loadingManger = new THREE.LoadingManager()
+
+loadingManger.onStart =() =>
+{
+  console.log('On Start')
+}
+
+loadingManger.onLoaded =() => 
+{
+  console.log('On Loaded')
+}
+
+loadingManger.onProgress =() =>
+{
+  console.log('On Progress')
+}
+
+
+
+
+
+
 
 /**
  * Textures
  */
-const textureLoader = new THREE.TextureLoader()
-const texture = textureLoader.load('/static/textures/door/color.jpg')
+const textureLoader = new THREE.TextureLoader(loadingManger)
+const colortexture = textureLoader.load('/static/textures/door/color.jpg')
+const alphatexture = textureLoader.load('/static/textures/door/alpha.jpg')
+const heighttexture = textureLoader.load('/static/textures/door/height.jpg')
+const normaltexture = textureLoader.load('/static/textures/door/normal.jpg')
+const ambientOcclusiontexture = textureLoader.load('/static/textures/door/ambientOcclusion.jpg')
+const metalnesstexture = textureLoader.load('/static/textures/door/metalness.jpg')
+const roughnesstexture = textureLoader.load('/static/textures/door/roughness.jpg')
+
+
+
+
+
+
+
+
+//transform texture
+colortexture.repeat.x = 2
+colortexture.repeat.y = 2
+
+colortexture.wrapS = THREE.RepeatWrapping
+colortexture.wrapT = THREE.RepeatWrapping
+
 
 
 
@@ -70,12 +116,14 @@ const scene = new THREE.Scene()
 const cube1 = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1, 4, 4, 4),
   new THREE.MeshBasicMaterial({
-    map: texture,
+    map: colortexture,
     side: THREE.DoubleSide,
     wireframe: false
   })
 )
-// scene.add(cube1)
+cube1.position.y = 0
+scene.add(cube1)
+
 
 
 //sphere for #Material
