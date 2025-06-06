@@ -20,13 +20,13 @@ const texture = textureLoader.load('/static/textures/door/color.jpg')
 /**
  * Functions
  */
-window.addEventListener('resize',()=>{
+window.addEventListener('resize', () => {
   //size reset
   sizes.width = window.innerWidth
   sizes.height = window.innerHeight
 
   //camera aspect update
-  pCamera.aspect = sizes.width/sizes.height
+  pCamera.aspect = sizes.width / sizes.height
 
   //camera update
   pCamera.updateProjectionMatrix()
@@ -43,8 +43,8 @@ window.addEventListener('resize',()=>{
  * Global Declarations
  */
 const sizes = {
-  width : window.innerWidth,
-  height : window.innerHeight
+  width: window.innerWidth,
+  height: window.innerHeight
 }
 
 //GUI declaration
@@ -68,17 +68,37 @@ const scene = new THREE.Scene()
  * Object and Mesh Setup
  */
 const cube1 = new THREE.Mesh(
-  new THREE.BoxGeometry(1,1,1,4,4,4),
+  new THREE.BoxGeometry(1, 1, 1, 4, 4, 4),
   new THREE.MeshBasicMaterial({
-    map: texture, 
-    side: THREE.DoubleSide, 
+    map: texture,
+    side: THREE.DoubleSide,
     wireframe: false
   })
 )
 // scene.add(cube1)
 
 
+//sphere for #Material
+const material = new THREE.MeshBasicMaterial({ color: 'red' })
 
+const sphere = new THREE.Mesh(
+  new THREE.SphereGeometry(0.5, 16, 16),
+  material
+)
+sphere.position.x = -1.5
+
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(1, 1),
+  material
+)
+
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(0.3, 0.2, 16, 32),
+  material
+)
+torus.position.x = 1.5
+
+scene.add(sphere, plane, torus)
 
 
 
@@ -88,9 +108,9 @@ const cube1 = new THREE.Mesh(
 /**
  * Camera setup
  */
-const pCamera = new THREE.PerspectiveCamera(45, sizes.width/sizes.height,0.1,1000)
-pCamera.position.set(0,0,5)
-scene.add (pCamera)
+const pCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 1000)
+pCamera.position.set(0, 0, 5)
+scene.add(pCamera)
 
 
 
@@ -115,11 +135,11 @@ const canvas = document.querySelector('.webgl')
  * Renderer setup
  */
 const renderer = new THREE.WebGLRenderer({
-  canvas : canvas,
-  antialias : true
+  canvas: canvas,
+  antialias: true
 })
-renderer.setSize(window.innerWidth,window.innerHeight)
-renderer.render(scene,pCamera)
+renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.render(scene, pCamera)
 
 
 
@@ -147,7 +167,7 @@ scene.add(pCameraHelper)
 /**
  * Orbit Controller
  */
-const orbitController = new OrbitControls(pCamera,canvas)
+const orbitController = new OrbitControls(pCamera, canvas)
 orbitController.enableDamping = true
 orbitController.dampingFactor = 0.01
 
@@ -182,8 +202,8 @@ gui
 gui
   .addColor(cube1.material, 'color')
 gui
-  .add(cube1,'visible')
-  
+  .add(cube1, 'visible')
+
 
 
 
@@ -198,8 +218,8 @@ gui
  */
 
 const animate = () => {
-  
-  renderer.render(scene,pCamera)
+
+  renderer.render(scene, pCamera)
   orbitController.update()
   window.requestAnimationFrame(animate)
 }
