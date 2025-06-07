@@ -35,6 +35,8 @@ loadingManger.onProgress =() =>
  * Textures
  */
 const textureLoader = new THREE.TextureLoader(loadingManger)
+const cubetextureLoader = new THREE.CubeTextureLoader()
+
 const doorColortexture = textureLoader.load('/static/textures/door/color.jpg')
 const alphatexture = textureLoader.load('/static/textures/door/alpha.jpg')
 const heighttexture = textureLoader.load('/static/textures/door/height.jpg')
@@ -47,6 +49,16 @@ const gradientTexture = textureLoader.load('/static/textures/gradients/3.jpg')
 
 gradientTexture.minFilter = THREE.NearestFilter
 gradientTexture.magFilter = THREE.NearestFilter
+gradientTexture.generateMipmaps = false
+
+const environmentMapTexture = cubetextureLoader.load([
+  '/static/textures/environmentMaps/3/px.jpg',
+  '/static/textures/environmentMaps/3/nx.jpg',
+  '/static/textures/environmentMaps/3/py.jpg',
+  '/static/textures/environmentMaps/3/ny.jpg',
+  '/static/textures/environmentMaps/3/pz.jpg',
+  '/static/textures/environmentMaps/3/nz.jpg',
+])
 
 
 
@@ -164,27 +176,59 @@ cube1.position.y = 0
 // const material = new THREE.MeshToonMaterial()
 // material.gradientMap = gradientTexture
  
-//Mesh Standard Material
+//Mesh Standard Material (responds to light)
+// const material = new THREE.MeshStandardMaterial()
+// // material.metalness = 0.5
+// // material.roughness = 0.5
+// material.side = THREE.DoubleSide
+// material.map = doorColortexture
+// material.aoMap = ambientOcclusiontexture
+// material.displacementMap = heighttexture
+// material.displacementScale = 0.05
+// material.metalnessMap = metalnesstexture
+// material.roughnessMap = roughnesstexture
+// material.normalMap = normaltexture
+// // material.normalScale.set(0.5,0.5)
+// material.alphaMap = alphatexture
+// material.transparent = true
+
+
 const material = new THREE.MeshStandardMaterial()
-material.metalness = 0.45
-material.roughness = 0.5
+material.metalness = 0.7
+material.roughness = 0.2
+material.envMap = environmentMapTexture
+
+
 
 const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(0.5, 32, 32),
+  new THREE.SphereGeometry(0.5, 64, 64),
   material
 )
 sphere.position.x = -1.5
+sphere.geometry.setAttribute(
+  'uv2', 
+  new THREE.BufferAttribute(sphere.geometry.attributes.uv.array,2)
+)
 
 const plane = new THREE.Mesh(
-  new THREE.PlaneGeometry(1, 1),
+  new THREE.PlaneGeometry(1, 1,100,100),
   material,
 )
 
+plane.geometry.setAttribute(
+  'uv2', 
+  new THREE.BufferAttribute(plane.geometry.attributes.uv.array,2)
+)
+
 const torus = new THREE.Mesh(
-  new THREE.TorusGeometry(0.3, 0.2, 16, 32),
+  new THREE.TorusGeometry(0.3, 0.2, 64, 128),
   material
 )
 torus.position.x = 1.5
+torus.geometry.setAttribute(
+  'uv2', 
+  new THREE.BufferAttribute(torus.geometry.attributes.uv.array,2)
+)
 
 scene.add(sphere, plane, torus)
 
@@ -207,6 +251,9 @@ pointLight.position.x = 2
 pointLight.position.y = 3
 pointLight.position.z = 1
 scene.add(pointLight)
+
+
+
 
 
 /**
@@ -261,6 +308,8 @@ scene.add(axesHelper)
 const pCameraHelper = new THREE.CameraHelper(pCamera)
 scene.add(pCameraHelper)
 
+const helper = new THREE.PointLightHelper( pointLight,1 );
+scene.add( helper );
 
 
 
@@ -302,13 +351,31 @@ gui
   .step(0.1)
   .name('cube Z')
 gui
-  .add(cube1.material, 'wireframe')
+  .add(plane.material, 'wireframe')
 gui
   .addColor(cube1.material, 'color')
 gui
   .add(cube1, 'visible')
-
-
+gui
+  .add(material, 'roughness')
+  .min(0)
+  .max(3)
+  .step(0.0001)
+gui
+  .add(material, 'metalness')
+  .min(0)
+  .max(1)
+  .step(0.0001)
+gui
+  .add(material, 'aoMapIntensity')
+  .min(0)
+  .max(10)
+  .step(0.01)
+gui
+  .add(material, 'displacementScale')
+  .min(-2)
+  .max(2)
+  .step(0.05)
 
 
 
