@@ -35,15 +35,18 @@ loadingManger.onProgress =() =>
  * Textures
  */
 const textureLoader = new THREE.TextureLoader(loadingManger)
-const colortexture = textureLoader.load('/static/textures/door/color.jpg')
+const doorColortexture = textureLoader.load('/static/textures/door/color.jpg')
 const alphatexture = textureLoader.load('/static/textures/door/alpha.jpg')
 const heighttexture = textureLoader.load('/static/textures/door/height.jpg')
 const normaltexture = textureLoader.load('/static/textures/door/normal.jpg')
 const ambientOcclusiontexture = textureLoader.load('/static/textures/door/ambientOcclusion.jpg')
 const metalnesstexture = textureLoader.load('/static/textures/door/metalness.jpg')
 const roughnesstexture = textureLoader.load('/static/textures/door/roughness.jpg')
+const matcapTexture = textureLoader.load('/static/textures/matcaps/1.png')
+const gradientTexture = textureLoader.load('/static/textures/gradients/3.jpg')
 
-
+gradientTexture.minFilter = THREE.NearestFilter
+gradientTexture.magFilter = THREE.NearestFilter
 
 
 
@@ -51,11 +54,11 @@ const roughnesstexture = textureLoader.load('/static/textures/door/roughness.jpg
 
 
 //transform texture
-colortexture.repeat.x = 2
-colortexture.repeat.y = 2
+doorColortexture.repeat.x = 2
+doorColortexture.repeat.y = 2
 
-colortexture.wrapS = THREE.RepeatWrapping
-colortexture.wrapT = THREE.RepeatWrapping
+doorColortexture.wrapS = THREE.RepeatWrapping
+doorColortexture.wrapT = THREE.RepeatWrapping
 
 
 
@@ -116,28 +119,65 @@ const scene = new THREE.Scene()
 const cube1 = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1, 4, 4, 4),
   new THREE.MeshBasicMaterial({
-    map: colortexture,
+    map: doorColortexture,
     side: THREE.DoubleSide,
     wireframe: false
   })
 )
 cube1.position.y = 0
-scene.add(cube1)
+// scene.add(cube1)
 
 
 
 //sphere for #Material
-const material = new THREE.MeshBasicMaterial({ color: 'red' })
+// const material = new THREE.MeshBasicMaterial()
+// material.map = doorColortexture
+// material.side = THREE.DoubleSide
+
+// material.transparent = true
+
+// material.alphaMap = alphatexture
+// material.alphaMap = alphatexture
+
+
+// Mesh Normal Material
+// const material = new THREE.MeshNormalMaterial
+// material.flatShading = true
+// material.wireframe = true
+
+//Mesh MatcapMaterial
+// const material = new THREE.MeshMatcapMaterial
+// material.matcap = matcapTexture
+
+//Mesh Depth Material
+// const material = new THREE.MeshDepthMaterial
+
+//Mesh Lambert Material (we need lights for it)
+// const material = new THREE.MeshLambertMaterial()
+
+//Mesh Phong Material (less performance)
+// const material = new THREE.MeshPhongMaterial()
+// material.shininess = 199
+// material.specular = new THREE.Color(0xff0000)
+
+//Mesh Toon Material
+// const material = new THREE.MeshToonMaterial()
+// material.gradientMap = gradientTexture
+ 
+//Mesh Standard Material
+const material = new THREE.MeshStandardMaterial()
+material.metalness = 0.45
+material.roughness = 0.5
 
 const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(0.5, 16, 16),
+  new THREE.SphereGeometry(0.5, 32, 32),
   material
 )
 sphere.position.x = -1.5
 
 const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(1, 1),
-  material
+  material,
 )
 
 const torus = new THREE.Mesh(
@@ -151,6 +191,22 @@ scene.add(sphere, plane, torus)
 
 
 
+
+
+
+
+/**
+ * Light set up
+ */
+
+const ambientLight = new THREE.AmbientLight(0xffffff,1)
+scene.add(ambientLight)
+
+const pointLight = new THREE.PointLight(0xffffff,20)
+pointLight.position.x = 2
+pointLight.position.y = 3
+pointLight.position.z = 1
+scene.add(pointLight)
 
 
 /**
@@ -265,7 +321,19 @@ gui
  * Animation
  */
 
+const clock = new THREE.Clock()
+
 const animate = () => {
+
+  const elapsedTime = clock.getElapsedTime()
+
+  sphere.rotation.x = 0.1 * elapsedTime
+  plane.rotation.x = 0.1 * elapsedTime
+  torus.rotation.x = 0.1 * elapsedTime
+
+  sphere.rotation.y = 0.15 * elapsedTime
+  plane.rotation.y = 0.15 * elapsedTime
+  torus.rotation.y = 0.15 * elapsedTime
 
   renderer.render(scene, pCamera)
   orbitController.update()
